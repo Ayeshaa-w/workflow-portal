@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WorkFlow Portal - Dashboard</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:linear-gradient(135deg,#eef2ff 0%,#e0e7ff 100%);color:#1e1b4b;font-size:13px;letter-spacing:-0.01em;display:flex;justify-content:center;align-items:center;min-height:100vh;padding:20px}
+.wrap{display:flex;width:100%;max-width:1200px;height:88vh;background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 25px 50px -12px rgba(79,70,229,0.25)}
+.sidebar{width:220px;background:linear-gradient(180deg,#4f46e5 0%,#7c3aed 100%);display:flex;flex-direction:column;color:#fff;flex-shrink:0}
+.logo-area{padding:20px 18px 16px;border-bottom:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;gap:10px}
+.logo-icon{width:34px;height:34px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo-text{font-size:15px;font-weight:700;color:#fff;letter-spacing:-0.02em}
+.logo-sub{font-size:10px;color:#c7d2fe}
+.nav-section{padding:12px 0 4px}
+.nav-label{font-size:10px;font-weight:700;color:#a5b4fc;letter-spacing:0.1em;text-transform:uppercase;padding:8px 18px 4px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 18px;font-size:12px;font-weight:500;color:#c7d2fe;cursor:pointer;border-left:3px solid transparent;transition:all .15s}
+.nav-item:hover{color:#fff;background:rgba(255,255,255,0.08)}
+.nav-item.active{color:#fff;border-left-color:#ff007f;background:rgba(255,255,255,0.15);font-weight:600}
+.nav-item i{font-size:15px}
+.user-section{margin-top:auto;padding:14px 18px;border-top:1px solid rgba(255,255,255,0.1);background:rgba(0,0,0,0.15)}
+.avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:#f4f6fe;min-width:0}
+.topbar{background:#fff;border-bottom:1px solid #e0e7ff;padding:14px 22px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.page-title{font-size:16px;font-weight:700;letter-spacing:-0.02em;color:#1e1b4b}
+.page-sub{font-size:11px;color:#4f46e5;margin-top:1px;font-weight:600}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border:1px solid #c7d2fe;border-radius:10px;font-size:11px;font-weight:600;font-family:inherit;background:#fff;color:#4f46e5;cursor:pointer;transition:all .15s}
+.btn:hover{background:#eef2ff;transform:translateY(-1px)}
+.btn-blue{background:linear-gradient(135deg,#4f46e5 0%,#6366f1 100%);color:#fff;border:none;box-shadow:0 4px 12px rgba(79,70,229,0.3)}
+.btn-blue:hover{box-shadow:0 6px 16px rgba(79,70,229,0.4);background:linear-gradient(135deg,#4338ca 0%,#4f46e5 100%)}
+.btn-green{background:#dcfce7;color:#15803d;border-color:#bbf7d0}
+.btn-red{background:#fee2e2;color:#b91c1c;border-color:#fecaca}
+.btn-purple{background:#f5f3ff;color:#7c3aed;border-color:#e0e7ff}
+.content{padding:18px 22px;overflow-y:auto;flex:1}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.stat{background:#fff;border:1px solid #e0e7ff;border-radius:14px;padding:14px 16px;position:relative;overflow:hidden;box-shadow:0 4px 6px -1px rgba(99,102,241,0.06)}
+.stat::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%}
+.stat-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.stat-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em}
+.stat-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.stat-value{font-size:24px;font-weight:800;line-height:1;letter-spacing:-0.03em}
+.stat-foot{font-size:11px;margin-top:4px;font-weight:500;opacity:0.8}
+.card{background:#fff;border:1px solid #e0e7ff;border-radius:14px;padding:16px 18px;margin-bottom:14px;box-shadow:0 4px 6px -1px rgba(99,102,241,0.06)}
+.card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.card-title{font-size:13px;font-weight:700;color:#1e1b4b}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;font-size:10px;font-weight:700;color:#4f46e5;padding:8px 12px;border-bottom:2px solid #e0e7ff;text-transform:uppercase;letter-spacing:0.06em;white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid #eef2ff;vertical-align:middle;color:#312e81;font-weight:500}
+tr:hover td{background:#f5f7ff}
+tr:last-child td{border-bottom:none}
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;padding:3px 10px;border-radius:20px;font-weight:700}
+.tag{display:inline-block;padding:3px 9px;border-radius:7px;font-size:10px;font-weight:700}
+.av{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
+.dot{width:6px;height:6px;border-radius:50%}
+.form-label{font-size:10px;font-weight:700;color:#4f46e5;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em;display:block}
+.form-input{width:100%;padding:9px 12px;border:2px solid #e0e7ff;border-radius:10px;font-size:12px;font-family:inherit;color:#1e1b4b;outline:none;transition:all .2s;background:#fff}
+.form-input:focus{border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,0.12)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.upload-zone{border:2px dashed #6366f1;border-radius:10px;padding:10px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;background:#f5f3ff;transition:all .15s}
+.upload-zone:hover{border-color:#7c3aed;background:#ede9fe}
+.role-pill{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700}
+.toast{position:fixed;bottom:24px;right:24px;background:#1e1b4b;color:#fff;padding:12px 20px;border-radius:10px;font-size:12px;font-weight:600;display:none;z-index:999;box-shadow:0 10px 25px rgba(30,27,75,0.3)}
+.hidden{display:none!important}
+.empty-state{text-align:center;padding:40px 20px;color:#6366f1}
+.empty-state i{font-size:40px;color:#c7d2fe;display:block;margin-bottom:8px}
+.nav-count{margin-left:auto;background:#ff3366;color:#fff;font-size:9px;padding:2px 7px;border-radius:20px;font-weight:700}
+.role-radio{display:flex;gap:6px}
+.role-radio-btn{padding:4px 10px;border-radius:6px;font-size:10px;font-weight:600;cursor:pointer;border:1px solid #e0e7ff;background:#fff;color:#6366f1}
+.role-radio-btn.selected{background:#4f46e5;color:#fff;border-color:#4f46e5}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<div class="sidebar">
+  <div class="logo-area">
+    <div class="logo-icon"><i class="ti ti-building-community" style="font-size:18px;color:#4f46e5" aria-hidden="true"></i></div>
+    <div><div class="logo-text">WorkFlow</div><div class="logo-sub">Employee Portal</div></div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Main</div>
+    <div class="nav-item active" onclick="showSection('dashboard', this)"><i class="ti ti-layout-dashboard" aria-hidden="true"></i>Dashboard</div>
+    <div class="nav-item" onclick="showSection('new-request', this)"><i class="ti ti-file-plus" aria-hidden="true"></i>New request</div>
+    <div class="nav-item" onclick="showSection('my-requests', this)"><i class="ti ti-files" aria-hidden="true"></i>My requests</div>
+  </div>
+
+  <div class="nav-section" id="adminNav">
+    <div class="nav-label">Admin</div>
+    <div class="nav-item" onclick="showSection('all-requests', this)"><i class="ti ti-clipboard-check" aria-hidden="true"></i>Approvals
+      <span class="nav-count" id="pendingBadge">0</span>
+    </div>
+    <div class="nav-item" id="usersNavItem" onclick="showSection('pending-users', this)"><i class="ti ti-user-plus" aria-hidden="true"></i>User approvals
+      <span class="nav-count" id="usersBadge">0</span>
+    </div>
+    <div class="nav-item" onclick="exportCSV()"><i class="ti ti-table-export" aria-hidden="true"></i>Export data</div>
+  </div>
+
+  <div class="user-section">
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="avatar" id="userAvatar" style="background:#fff;color:#4f46e5">AZ</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:11px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff" id="userName">Loading...</div>
+        <div class="role-pill" id="rolePill" style="background:#ffe600;color:#000;margin-top:2px"></div>
+      </div>
+      <i class="ti ti-logout" style="font-size:15px;color:#c7d2fe;cursor:pointer" onclick="logout()" aria-hidden="true" title="Logout"></i>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div>
+      <div class="page-title" id="pageTitle">Dashboard Overview</div>
+      <div class="page-sub" id="pageDate"></div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button class="btn" id="exportBtn" onclick="exportCSV()"><i class="ti ti-download" style="font-size:13px" aria-hidden="true"></i>Export CSV</button>
+      <button class="btn btn-blue" onclick="showSection('new-request')"><i class="ti ti-plus" style="font-size:13px" aria-hidden="true"></i>New request</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div id="section-dashboard">
+      <div class="stat-grid">
+        <div class="stat" style="border-left-color:#4f46e5">
+          <div class="stat-top">
+            <div class="stat-label" style="color:#4f46e5">Total</div>
+            <div class="stat-icon" style="background:#e0e7ff"><i class="ti ti-files" style="font-size:14px;color:#4f46e5" aria-hidden="true"></i></div>
+          </div>
+          <div class="stat-value" style="color:#4f46e5" id="statTotal">0</div>
+          <div class="stat-foot" style="color:#6366f1">All requests</div>
+        </div>
+        <div class="stat" style="border-left-color:#ea580c">
+          <div class="stat-top">
+            <div class="stat-label" style="color:#ea580c">Pending</div>
+            <div class="stat-icon" style="background:#ffedd5"><i class="ti ti-clock" style="font-size:14px;color:#ea580c" aria-hidden="true"></i></div>
+          </div>
+          <div class="stat-value" style="color:#ea580c" id="statPending">0</div>
+          <div class="stat-foot" style="color:#ea580c">Needs review</div>
+        </div>
+        <div class="stat" style="border-left-color:#16a34a">
+          <div class="stat-top">
+            <div class="stat-label" style="color:#16a34a">Approved</div>
+            <div class="stat-icon" style="background:#dcfce7"><i class="ti ti-circle-check" style="font-size:14px;color:#16a34a" aria-hidden="true"></i></div>
+          </div>
+          <div class="stat-value" style="color:#16a34a" id="statApproved">0</div>
+          <div class="stat-foot" style="color:#16a34a">This month</div>
+        </div>
+        <div class="stat" style="border-left-color:#dc2626">
+          <div class="stat-top">
+            <div class="stat-label" style="color:#dc2626">Rejected</div>
+            <div class="stat-icon" style="background:#fee2e2"><i class="ti ti-circle-x" style="font-size:14px;color:#dc2626" aria-hidden="true"></i></div>
+          </div>
+          <div class="stat-value" style="color:#dc2626" id="statRejected">0</div>
+          <div class="stat-foot" style="color:#dc2626">This month</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">Recent requests</div>
+          <div style="display:flex;gap:8px">
+            <select class="form-input" style="width:110px;padding:5px 10px;font-size:11px" id="filterStatus" onchange="filterTable()">
+              <option value="">All status</option>
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+            </select>
+            <select class="form-input" style="width:110px;padding:5px 10px;font-size:11px" id="filterType" onchange="filterTable()">
+              <option value="">All types</option>
+              <option value="Leave Request">Leave</option>
+              <option value="Expense Claim">Expense</option>
+              <option value="Access Request">Access</option>
+            </select>
+          </div>
+        </div>
+        <div id="tableWrap"><div class="empty-state"><i class="ti ti-inbox" aria-hidden="true"></i>Loading...</div></div>
+      </div>
+    </div>
+
+    <!-- NEW REQUEST -->
+    <div id="section-new-request" class="hidden">
+      <div class="card" style="max-width:620px">
+        <div class="card-head"><div class="card-title">Submit new request</div></div>
+        <div class="form-grid">
+          <div>
+            <label class="form-label">Request type</label>
+            <select class="form-input" id="reqType">
+              <option value="Leave Request">Leave request</option>
+              <option value="Expense Claim">Expense claim</option>
+              <option value="Access Request">Access request</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">Your name</label>
+            <input class="form-input" type="text" id="reqName" placeholder="Full name">
+          </div>
+        </div>
+        <div style="margin-bottom:14px">
+          <label class="form-label">Description</label>
+          <textarea class="form-input" rows="3" id="reqDesc" placeholder="Describe your request in detail..." style="resize:none"></textarea>
+        </div>
+        <div style="margin-bottom:16px">
+          <label class="form-label">Attach proof (PDF)</label>
+          <div class="upload-zone" onclick="document.getElementById('pdfInput').click()">
+            <i class="ti ti-upload" style="font-size:18px;color:#6366f1" aria-hidden="true"></i>
+            <div>
+              <div style="font-size:12px;color:#4f46e5;font-weight:700" id="uploadLabel">Click to attach PDF proof</div>
+              <div style="font-size:10px;color:#6366f1;margin-top:1px">PDF only · max 5MB</div>
+            </div>
+          </div>
+          <input type="file" id="pdfInput" accept=".pdf" style="display:none" onchange="handleFileSelect(this)">
+        </div>
+        <div style="display:flex;gap:10px">
+          <button class="btn btn-blue" onclick="submitRequest()"><i class="ti ti-send" style="font-size:13px" aria-hidden="true"></i>Submit request</button>
+          <button class="btn" onclick="showSection('dashboard')">Cancel</button>
+        </div>
+        <div id="formError" style="background:#fee2e2;color:#b91c1c;border:1px solid #fecaca;border-radius:8px;padding:10px;font-size:12px;margin-top:12px;display:none"></div>
+      </div>
+    </div>
+
+    <!-- MY REQUESTS -->
+    <div id="section-my-requests" class="hidden">
+      <div class="card">
+        <div class="card-head"><div class="card-title">My requests</div></div>
+        <div id="myRequestsWrap"><div class="empty-state"><i class="ti ti-inbox" aria-hidden="true"></i>Loading...</div></div>
+      </div>
+    </div>
+
+    <!-- ALL REQUESTS / APPROVALS -->
+    <div id="section-all-requests" class="hidden">
+      <div class="card">
+        <div class="card-head"><div class="card-title">All requests — pending approval</div></div>
+        <div id="allRequestsWrap"><div class="empty-state"><i class="ti ti-inbox" aria-hidden="true"></i>Loading...</div></div>
+      </div>
+    </div>
+
+    <!-- PENDING USER APPROVALS (ADMIN ONLY) -->
+    <div id="section-pending-users" class="hidden">
+      <div class="card">
+        <div class="card-head"><div class="card-title">Pending user registrations</div></div>
+        <div id="pendingUsersWrap"><div class="empty-state"><i class="ti ti-inbox" aria-hidden="true"></i>Loading...</div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = '';
+let allRequests = [];
+let currentUser = null;
+let token = null;
+let replaceRequestId = null;
+
+function init() {
+  token = localStorage.getItem('token');
+  const userStr = localStorage.getItem('user');
+  if (!token || !userStr) { window.location.href = '/'; return; }
+  currentUser = JSON.parse(userStr);
+
+  const initials = currentUser.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('userAvatar').textContent = initials;
+  document.getElementById('userName').textContent = currentUser.name;
+
+  const roleColors = { admin: '#ffe600', manager: '#bbf7d0', employee: '#e0e7ff' };
+  const roleText = { admin: '#000', manager: '#15803d', employee: '#4f46e5' };
+  const pill = document.getElementById('rolePill');
+  pill.style.background = roleColors[currentUser.role] || '#e0e7ff';
+  pill.style.color = roleText[currentUser.role] || '#4f46e5';
+  pill.innerHTML = `<i class="ti ti-shield" style="font-size:10px" aria-hidden="true"></i>${currentUser.role}`;
+
+  if (currentUser.role === 'employee') {
+    document.getElementById('adminNav').style.display = 'none';
+    document.getElementById('exportBtn').style.display = 'none';
+  }
+  if (currentUser.role === 'manager') {
+    document.getElementById('usersNavItem').style.display = 'none';
+    document.getElementById('exportBtn').style.display = 'none';
+  }
+
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const now = new Date();
+  document.getElementById('pageDate').textContent = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+
+  loadRequests();
+  if (currentUser.role === 'admin') loadPendingUsers();
+}
+
+async function loadRequests() {
+  try {
+    const res = await fetch(`${API}/requests`, { headers: { 'Authorization': `Bearer ${token}` } });
+    if (res.status === 401) { logout(); return; }
+    allRequests = await res.json();
+    updateStats();
+    renderTable(allRequests, 'tableWrap', true);
+    renderTable(allRequests, 'myRequestsWrap', currentUser.role === 'employee');
+    const pending = allRequests.filter(r => r.status === 'pending');
+    renderTable(pending, 'allRequestsWrap', true);
+    document.getElementById('pendingBadge').textContent = pending.length;
+  } catch(e) { showToast('Failed to load requests'); }
+}
+
+async function loadPendingUsers() {
+  try {
+    const res = await fetch(`${API}/auth/pending-users`, { headers: { 'Authorization': `Bearer ${token}` } });
+    const users = await res.json();
+    document.getElementById('usersBadge').textContent = users.length;
+    renderPendingUsers(users);
+  } catch(e) { showToast('Failed to load pending users'); }
+}
+
+function renderPendingUsers(users) {
+  const wrap = document.getElementById('pendingUsersWrap');
+  if (!users.length) {
+    wrap.innerHTML = '<div class="empty-state"><i class="ti ti-user-check" aria-hidden="true"></i><div style="margin-top:8px">No pending registrations</div></div>';
+    return;
+  }
+  const rows = users.map(u => {
+    const date = new Date(u.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+    return `<tr>
+      <td>${u.name}</td>
+      <td style="color:#6366f1">${u.email}</td>
+      <td>
+        <div class="role-radio" id="roleSelect-${u.id}">
+          <div class="role-radio-btn ${u.role==='employee'?'selected':''}" onclick="selectApprovalRole(${u.id},'employee')">Employee</div>
+          <div class="role-radio-btn ${u.role==='manager'?'selected':''}" onclick="selectApprovalRole(${u.id},'manager')">Manager</div>
+        </div>
+      </td>
+      <td style="color:#6366f1">${date}</td>
+      <td>
+        <div style="display:flex;gap:5px">
+          <button class="btn btn-green" style="padding:4px 10px;font-size:10px" onclick="approveUser(${u.id})">Approve</button>
+          <button class="btn btn-red" style="padding:4px 10px;font-size:10px" onclick="rejectUser(${u.id})">Reject</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+  wrap.innerHTML = `<table>
+    <thead><tr><th>Name</th><th>Email</th><th>Requested role</th><th>Registered</th><th>Actions</th></tr></thead>
+    <tbody>${rows}</tbody></table>`;
+}
+
+const approvalRoles = {};
+function selectApprovalRole(id, role) {
+  approvalRoles[id] = role;
+  document.querySelectorAll(`#roleSelect-${id} .role-radio-btn`).forEach(b => b.classList.remove('selected'));
+  event.target.classList.add('selected');
+}
+
+async function approveUser(id) {
+  const role = approvalRoles[id] || null;
+  try {
+    const res = await fetch(`${API}/auth/approve-user/${id}`, {
+      method: 'PUT',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ decision: 'approved', role })
+    });
+    const data = await res.json();
+    if (!res.ok) { showToast(data.error); return; }
+    showToast(`${data.user.name} approved as ${data.user.role}`);
+    loadPendingUsers();
+  } catch(e) { showToast('Approval failed'); }
+}
+
+async function rejectUser(id) {
+  if (!confirm('Reject this registration?')) return;
+  try {
+    const res = await fetch(`${API}/auth/approve-user/${id}`, {
+      method: 'PUT',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ decision: 'rejected' })
+    });
+    const data = await res.json();
+    if (!res.ok) { showToast(data.error); return; }
+    showToast('Registration rejected');
+    loadPendingUsers();
+  } catch(e) { showToast('Action failed'); }
+}
+
+function updateStats() {
+  document.getElementById('statTotal').textContent = allRequests.length;
+  document.getElementById('statPending').textContent = allRequests.filter(r=>r.status==='pending').length;
+  document.getElementById('statApproved').textContent = allRequests.filter(r=>r.status==='approved').length;
+  document.getElementById('statRejected').textContent = allRequests.filter(r=>r.status==='rejected').length;
+}
+
+function renderTable(requests, containerId, showActions) {
+  const wrap = document.getElementById(containerId);
+  if (!requests.length) {
+    wrap.innerHTML = '<div class="empty-state"><i class="ti ti-inbox" aria-hidden="true"></i><div style="margin-top:8px;font-size:13px">No requests found</div></div>';
+    return;
+  }
+
+  const typeColors = {
+    'Leave Request': { bg:'#e0e7ff', color:'#4f46e5' },
+    'Expense Claim': { bg:'#fef3c7', color:'#b45309' },
+    'Access Request': { bg:'#e0f2fe', color:'#0369a1' }
+  };
+  const statusBadge = {
+    pending: '<span class="badge" style="background:#ffedd5;color:#c2410c"><div class="dot" style="background:#ea580c"></div>Pending</span>',
+    approved: '<span class="badge" style="background:#dcfce7;color:#15803d"><div class="dot" style="background:#16a34a"></div>Approved</span>',
+    rejected: '<span class="badge" style="background:#fee2e2;color:#b91c1c"><div class="dot" style="background:#dc2626"></div>Rejected</span>'
+  };
+
+  const rows = requests.map(r => {
+    const tc = typeColors[r.type] || { bg:'#f3f4f6', color:'#6b7280' };
+    const date = new Date(r.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+    const initials = (r.employee_name||'?').split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+    const avatarColors = ['#e0e7ff','#fef3c7','#dcfce7','#fee2e2','#e0f2fe','#f5f3ff'];
+    const avBg = avatarColors[r.id % avatarColors.length];
+
+    const fileCell = r.file_path
+      ? `<a href="/${r.file_path}" target="_blank" title="View PDF"><i class="ti ti-file-type-pdf" style="font-size:16px;color:#ef4444" aria-hidden="true"></i></a>`
+      : '<span style="color:#a5b4fc">—</span>';
+
+    let actions = '';
+    if (showActions) {
+      const isAdmin = currentUser.role === 'admin';
+      const isManagerOrAdmin = ['manager','admin'].includes(currentUser.role);
+      const isOwner = r.submitted_by === currentUser.id;
+      let btns = [];
+
+      if (r.status === 'pending' && isManagerOrAdmin) {
+        btns.push(`<button class="btn btn-green" style="padding:4px 10px;font-size:10px" onclick="updateStatus(${r.id},'approved')">Approve</button>`);
+        btns.push(`<button class="btn btn-red" style="padding:4px 10px;font-size:10px" onclick="updateStatus(${r.id},'rejected')">Reject</button>`);
+      }
+      if (r.status === 'pending' && isOwner) {
+        btns.push(`<button class="btn btn-purple" style="padding:4px 10px;font-size:10px" onclick="openReplaceFile(${r.id})"><i class="ti ti-replace" style="font-size:11px" aria-hidden="true"></i>Replace PDF</button>`);
+      }
+      if (isAdmin) {
+        btns.push(`<button class="btn btn-red" style="padding:4px 10px;font-size:10px" onclick="deleteRequest(${r.id})"><i class="ti ti-trash" style="font-size:11px" aria-hidden="true"></i>Delete</button>`);
+      }
+      actions = btns.length ? `<div style="display:flex;gap:5px;flex-wrap:wrap">${btns.join('')}</div>` : '<span style="color:#a5b4fc;font-size:11px">—</span>';
+    }
+
+    return `<tr>
+      <td><div style="display:flex;align-items:center;gap:7px"><div class="av" style="background:${avBg};color:#4338ca">${initials}</div>${r.employee_name||'Unknown'}</div></td>
+      <td><span class="tag" style="background:${tc.bg};color:${tc.color}">${r.type}</span></td>
+      <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#4338ca" title="${r.description}">${r.description}</td>
+      <td>${fileCell}</td>
+      <td>${statusBadge[r.status]||r.status}</td>
+      <td style="color:#6366f1">${date}</td>
+      ${showActions ? `<td>${actions}</td>` : ''}
+    </tr>`;
+  }).join('');
+
+  const actionHeader = showActions ? '<th>Actions</th>' : '';
+  wrap.innerHTML = `<table>
+    <thead><tr><th>Employee</th><th>Type</th><th>Description</th><th>Proof</th><th>Status</th><th>Date</th>${actionHeader}</tr></thead>
+    <tbody>${rows}</tbody></table>`;
+}
+
+function filterTable() {
+  const status = document.getElementById('filterStatus').value;
+  const type = document.getElementById('filterType').value;
+  let filtered = allRequests;
+  if (status) filtered = filtered.filter(r => r.status === status);
+  if (type) filtered = filtered.filter(r => r.type === type);
+  renderTable(filtered, 'tableWrap', true);
+}
+
+async function updateStatus(id, status) {
+  try {
+    const res = await fetch(`${API}/requests/${id}`, {
+      method: 'PUT',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status })
+    });
+    if (!res.ok) { const d = await res.json(); showToast(d.error); return; }
+    showToast(`Request ${status} successfully`);
+    loadRequests();
+  } catch(e) { showToast('Action failed'); }
+}
+
+async function deleteRequest(id) {
+  if (!confirm('Delete this request permanently?')) return;
+  try {
+    const res = await fetch(`${API}/requests/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+    if (!res.ok) { const d = await res.json(); showToast(d.error); return; }
+    showToast('Request deleted');
+    loadRequests();
+  } catch(e) { showToast('Delete failed'); }
+}
+
+function openReplaceFile(id) {
+  replaceRequestId = id;
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.pdf';
+  input.onchange = async () => {
+    if (!input.files[0]) return;
+    const form = new FormData();
+    form.append('document', input.files[0]);
+    try {
+      const res = await fetch(`${API}/upload/${id}`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+        body: form
+      });
+      const data = await res.json();
+      if (!res.ok) { showToast(data.error); return; }
+      showToast('File replaced successfully');
+      loadRequests();
+    } catch(e) { showToast('Replace failed'); }
+  };
+  input.click();
+}
+
+function handleFileSelect(input) {
+  if (input.files[0]) document.getElementById('uploadLabel').textContent = input.files[0].name;
+}
+
+async function submitRequest() {
+  const type = document.getElementById('reqType').value;
+  const name = document.getElementById('reqName').value.trim();
+  const desc = document.getElementById('reqDesc').value.trim();
+  const err = document.getElementById('formError');
+  err.style.display = 'none';
+
+  if (!name || !desc) { err.textContent = 'Please fill all fields.'; err.style.display = 'block'; return; }
+
+  try {
+    const res = await fetch(`${API}/requests`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ employee_name: name, type, description: desc })
+    });
+    const data = await res.json();
+    if (!res.ok) { err.textContent = data.error; err.style.display = 'block'; return; }
+
+    const fileInput = document.getElementById('pdfInput');
+    if (fileInput.files[0]) {
+      const form = new FormData();
+      form.append('document', fileInput.files[0]);
+      await fetch(`${API}/upload/${data.id}`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+        body: form
+      });
+    }
+
+    document.getElementById('reqName').value = '';
+    document.getElementById('reqDesc').value = '';
+    document.getElementById('uploadLabel').textContent = 'Click to attach PDF proof';
+    fileInput.value = '';
+    showToast('Request submitted successfully');
+    loadRequests();
+    showSection('dashboard');
+  } catch(e) { err.textContent = 'Submission failed. Try again.'; err.style.display = 'block'; }
+}
+
+function exportCSV() {
+  if (currentUser.role === 'employee' || currentUser.role === 'manager') { showToast('Export not available for your role'); return; }
+  const headers = ['ID','Employee','Type','Description','Status','File','Date'];
+  const rows = allRequests.map(r => [
+    r.id, r.employee_name, r.type,
+    `"${r.description.replace(/"/g,'""')}"`,
+    r.status, r.file_path || '', new Date(r.created_at).toLocaleDateString()
+  ]);
+  const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `workflow-requests-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  showToast('CSV downloaded');
+}
+
+function showSection(name, el) {
+  ['dashboard','new-request','my-requests','all-requests','pending-users'].forEach(s => {
+    const sec = document.getElementById(`section-${s}`);
+    if (sec) sec.classList.add('hidden');
+  });
+  document.getElementById(`section-${name}`).classList.remove('hidden');
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+  if (el) el.classList.add('active');
+
+  const titles = { dashboard:'Dashboard Overview', 'new-request':'New Request', 'my-requests':'My Requests', 'all-requests':'Approvals', 'pending-users':'User Approvals' };
+  document.getElementById('pageTitle').textContent = titles[name] || 'Dashboard';
+
+  if (name === 'pending-users') loadPendingUsers();
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 3000);
+}
+
+function logout() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  window.location.href = '/';
+}
+
+init();
+</script>
+</body>
+</html>
