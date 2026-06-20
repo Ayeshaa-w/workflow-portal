@@ -14,5 +14,5 @@ router.get('/:id', verifyToken, getRequestById);
 router.post('/', verifyToken, createRequest);
 router.put('/:id', verifyToken,verifyRole('manager', 'admin'), updateStatus);
 router.delete('/:id', verifyToken,verifyRole('admin'), deleteRequest);
-
+router.patch('/:id/edit', verifyToken, editRequest);
 module.exports = router;
