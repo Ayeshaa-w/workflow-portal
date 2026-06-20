@@ -80,10 +80,37 @@ const deleteRequest = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+const editRequest = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { employee_name, type, description } = req.body;
+        if (!employee_name || !type || !description) {
+            return res.status(400).json({ error: 'All fields required' });
+        }
+        const check = await pool.query(
+            'SELECT * FROM requests WHERE id = $1 AND submitted_by = $2',
+            [id, req.user.id]
+        );
+        if (check.rows.length === 0) {
+            return res.status(404).json({ error: 'Request not found or not yours' });
+        }
+        if (check.rows[0].status !== 'pending') {
+            return res.status(400).json({ error: 'Only pending requests can be edited' });
+        }
+        const result = await pool.query(
+            'UPDATE requests SET employee_name=$1, type=$2, description=$3 WHERE id=$4 RETURNING *',
+            [employee_name, type, description, id]
+        );
+        res.status(200).json(result.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
 module.exports = {
     getAllRequests,
     getRequestById,
     createRequest,
     updateStatus,
-    deleteRequest
+    deleteRequest,
+    editRequest
 };
