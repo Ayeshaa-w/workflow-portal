@@ -32,7 +32,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans
 .btn-blue:hover{box-shadow:0 6px 16px rgba(79,70,229,0.4);background:linear-gradient(135deg,#4338ca 0%,#4f46e5 100%)}
 .btn-green{background:#dcfce7;color:#15803d;border-color:#bbf7d0}
 .btn-red{background:#fee2e2;color:#b91c1c;border-color:#fecaca}
-.btn-purple{background:#f5f3ff;color:#7c3aed;border-color:#e0e7ff}
+.btn-purple{background:#f5f3ff;color:#7c3aed;border-color:#ddd6fe}
 .content{padding:18px 22px;overflow-y:auto;flex:1}
 .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
 .stat{background:#fff;border:1px solid #e0e7ff;border-radius:14px;padding:14px 16px;position:relative;overflow:hidden;box-shadow:0 4px 6px -1px rgba(99,102,241,0.06)}
@@ -65,10 +65,9 @@ tr:last-child td{border-bottom:none}
 .hidden{display:none!important}
 .empty-state{text-align:center;padding:40px 20px;color:#6366f1}
 .empty-state i{font-size:40px;color:#c7d2fe;display:block;margin-bottom:8px}
-.nav-count{margin-left:auto;background:#ff3366;color:#fff;font-size:9px;padding:2px 7px;border-radius:20px;font-weight:700}
-.role-radio{display:flex;gap:6px}
-.role-radio-btn{padding:4px 10px;border-radius:6px;font-size:10px;font-weight:600;cursor:pointer;border:1px solid #e0e7ff;background:#fff;color:#6366f1}
-.role-radio-btn.selected{background:#4f46e5;color:#fff;border-color:#4f46e5}
+.modal-bg{position:fixed;inset:0;background:rgba(30,27,75,0.4);display:flex;align-items:center;justify-content:center;z-index:100;display:none}
+.modal{background:#fff;border-radius:16px;padding:28px;width:420px;box-shadow:0 25px 50px rgba(0,0,0,0.2)}
+.modal-title{font-size:16px;font-weight:700;color:#1e1b4b;margin-bottom:16px}
 </style>
 </head>
 <body>
@@ -82,18 +81,15 @@ tr:last-child td{border-bottom:none}
 
   <div class="nav-section">
     <div class="nav-label">Main</div>
-    <div class="nav-item active" onclick="showSection('dashboard', this)"><i class="ti ti-layout-dashboard" aria-hidden="true"></i>Dashboard</div>
-    <div class="nav-item" onclick="showSection('new-request', this)"><i class="ti ti-file-plus" aria-hidden="true"></i>New request</div>
-    <div class="nav-item" onclick="showSection('my-requests', this)"><i class="ti ti-files" aria-hidden="true"></i>My requests</div>
+    <div class="nav-item active" onclick="showSection('dashboard')"><i class="ti ti-layout-dashboard" aria-hidden="true"></i>Dashboard</div>
+    <div class="nav-item" onclick="showSection('new-request')"><i class="ti ti-file-plus" aria-hidden="true"></i>New request</div>
+    <div class="nav-item" onclick="showSection('my-requests')"><i class="ti ti-files" aria-hidden="true"></i>My requests</div>
   </div>
 
   <div class="nav-section" id="adminNav">
     <div class="nav-label">Admin</div>
-    <div class="nav-item" onclick="showSection('all-requests', this)"><i class="ti ti-clipboard-check" aria-hidden="true"></i>Approvals
-      <span class="nav-count" id="pendingBadge">0</span>
-    </div>
-    <div class="nav-item" id="usersNavItem" onclick="showSection('pending-users', this)"><i class="ti ti-user-plus" aria-hidden="true"></i>User approvals
-      <span class="nav-count" id="usersBadge">0</span>
+    <div class="nav-item" onclick="showSection('all-requests')"><i class="ti ti-clipboard-check" aria-hidden="true"></i>Approvals
+      <span id="pendingBadge" style="margin-left:auto;background:#ff3366;color:#fff;font-size:9px;padding:2px 7px;border-radius:20px;font-weight:700">0</span>
     </div>
     <div class="nav-item" onclick="exportCSV()"><i class="ti ti-table-export" aria-hidden="true"></i>Export data</div>
   </div>
@@ -124,7 +120,7 @@ tr:last-child td{border-bottom:none}
 
   <div class="content">
 
-    <!-- DASHBOARD -->
+    <!-- DASHBOARD SECTION -->
     <div id="section-dashboard">
       <div class="stat-grid">
         <div class="stat" style="border-left-color:#4f46e5">
@@ -179,11 +175,13 @@ tr:last-child td{border-bottom:none}
             </select>
           </div>
         </div>
-        <div id="tableWrap"><div class="empty-state"><i class="ti ti-inbox" aria-hidden="true"></i>Loading...</div></div>
+        <div id="tableWrap">
+          <div class="empty-state"><i class="ti ti-inbox" aria-hidden="true"></i>Loading requests...</div>
+        </div>
       </div>
     </div>
 
-    <!-- NEW REQUEST -->
+    <!-- NEW REQUEST SECTION -->
     <div id="section-new-request" class="hidden">
       <div class="card" style="max-width:620px">
         <div class="card-head"><div class="card-title">Submit new request</div></div>
@@ -224,32 +222,79 @@ tr:last-child td{border-bottom:none}
       </div>
     </div>
 
-    <!-- MY REQUESTS -->
+    <!-- MY REQUESTS SECTION -->
     <div id="section-my-requests" class="hidden">
       <div class="card">
         <div class="card-head"><div class="card-title">My requests</div></div>
-        <div id="myRequestsWrap"><div class="empty-state"><i class="ti ti-inbox" aria-hidden="true"></i>Loading...</div></div>
+        <div id="myRequestsWrap">
+          <div class="empty-state"><i class="ti ti-inbox" aria-hidden="true"></i>Loading...</div>
+        </div>
       </div>
     </div>
 
-    <!-- ALL REQUESTS / APPROVALS -->
+    <!-- ALL REQUESTS (MANAGER/ADMIN) SECTION -->
     <div id="section-all-requests" class="hidden">
       <div class="card">
-        <div class="card-head"><div class="card-title">All requests — pending approval</div></div>
-        <div id="allRequestsWrap"><div class="empty-state"><i class="ti ti-inbox" aria-hidden="true"></i>Loading...</div></div>
-      </div>
-    </div>
-
-    <!-- PENDING USER APPROVALS (ADMIN ONLY) -->
-    <div id="section-pending-users" class="hidden">
-      <div class="card">
-        <div class="card-head"><div class="card-title">Pending user registrations</div></div>
-        <div id="pendingUsersWrap"><div class="empty-state"><i class="ti ti-inbox" aria-hidden="true"></i>Loading...</div></div>
+        <div class="card-head">
+          <div class="card-title">All requests — pending approval</div>
+        </div>
+        <div id="allRequestsWrap">
+          <div class="empty-state"><i class="ti ti-inbox" aria-hidden="true"></i>Loading...</div>
+        </div>
       </div>
     </div>
 
   </div>
 </div>
+</div>
+
+<div id="replaceModalBg" style="position:fixed;inset:0;background:rgba(30,27,75,0.4);display:none;align-items:center;justify-content:center;z-index:200">
+  <div style="background:#fff;border-radius:16px;padding:24px;width:380px;box-shadow:0 25px 50px rgba(0,0,0,0.2)">
+    <div style="font-size:15px;font-weight:700;color:#1e1b4b;margin-bottom:6px">Replace PDF proof</div>
+    <div style="font-size:12px;color:#6366f1;margin-bottom:16px">Upload a new PDF to replace the existing proof document.</div>
+    <div class="upload-zone" onclick="document.getElementById('replacePdfInput').click()" style="margin-bottom:16px">
+      <i class="ti ti-upload" style="font-size:18px;color:#6366f1" aria-hidden="true"></i>
+      <div>
+        <div style="font-size:12px;color:#4f46e5;font-weight:700" id="replaceUploadLabel">Click to select PDF</div>
+        <div style="font-size:10px;color:#6366f1;margin-top:1px">PDF only · max 5MB</div>
+      </div>
+    </div>
+    <input type="file" id="replacePdfInput" accept=".pdf" style="display:none" onchange="handleReplaceFileSelect(this)">
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-blue" onclick="submitReplaceFile()"><i class="ti ti-upload" style="font-size:12px" aria-hidden="true"></i>Upload</button>
+      <button class="btn" onclick="closeReplaceModal()">Cancel</button>
+    </div>
+    <div id="replaceError" style="background:#fee2e2;color:#b91c1c;border:1px solid #fecaca;border-radius:8px;padding:10px;font-size:12px;margin-top:12px;display:none"></div>
+  </div>
+</div>
+
+<div id="editModalBg" style="position:fixed;inset:0;background:rgba(30,27,75,0.4);display:none;align-items:center;justify-content:center;z-index:200">
+  <div style="background:#fff;border-radius:16px;padding:24px;width:420px;box-shadow:0 25px 50px rgba(0,0,0,0.2)">
+    <div style="font-size:15px;font-weight:700;color:#1e1b4b;margin-bottom:16px">Edit request</div>
+    <div class="form-grid">
+      <div>
+        <label class="form-label">Request type</label>
+        <select class="form-input" id="editType">
+          <option value="Leave Request">Leave request</option>
+          <option value="Expense Claim">Expense claim</option>
+          <option value="Access Request">Access request</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label">Your name</label>
+        <input class="form-input" type="text" id="editName">
+      </div>
+    </div>
+    <div style="margin-bottom:16px">
+      <label class="form-label">Description</label>
+      <textarea class="form-input" rows="3" id="editDesc" style="resize:none"></textarea>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-blue" onclick="saveEdit()">Save changes</button>
+      <button class="btn" onclick="closeEditModal()">Cancel</button>
+    </div>
+    <div id="editError" style="background:#fee2e2;color:#b91c1c;border:1px solid #fecaca;border-radius:8px;padding:10px;font-size:12px;margin-top:12px;display:none"></div>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -259,7 +304,6 @@ const API = '';
 let allRequests = [];
 let currentUser = null;
 let token = null;
-let replaceRequestId = null;
 
 function init() {
   token = localStorage.getItem('token');
@@ -282,10 +326,6 @@ function init() {
     document.getElementById('adminNav').style.display = 'none';
     document.getElementById('exportBtn').style.display = 'none';
   }
-  if (currentUser.role === 'manager') {
-    document.getElementById('usersNavItem').style.display = 'none';
-    document.getElementById('exportBtn').style.display = 'none';
-  }
 
   const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -293,98 +333,24 @@ function init() {
   document.getElementById('pageDate').textContent = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
 
   loadRequests();
-  if (currentUser.role === 'admin') loadPendingUsers();
 }
 
 async function loadRequests() {
   try {
-    const res = await fetch(`${API}/requests`, { headers: { 'Authorization': `Bearer ${token}` } });
+    const res = await fetch(`${API}/requests`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
     if (res.status === 401) { logout(); return; }
     allRequests = await res.json();
     updateStats();
     renderTable(allRequests, 'tableWrap', true);
-    renderTable(allRequests, 'myRequestsWrap', currentUser.role === 'employee');
+    renderTable(allRequests, 'myRequestsWrap', false);
     const pending = allRequests.filter(r => r.status === 'pending');
     renderTable(pending, 'allRequestsWrap', true);
     document.getElementById('pendingBadge').textContent = pending.length;
-  } catch(e) { showToast('Failed to load requests'); }
-}
-
-async function loadPendingUsers() {
-  try {
-    const res = await fetch(`${API}/auth/pending-users`, { headers: { 'Authorization': `Bearer ${token}` } });
-    const users = await res.json();
-    document.getElementById('usersBadge').textContent = users.length;
-    renderPendingUsers(users);
-  } catch(e) { showToast('Failed to load pending users'); }
-}
-
-function renderPendingUsers(users) {
-  const wrap = document.getElementById('pendingUsersWrap');
-  if (!users.length) {
-    wrap.innerHTML = '<div class="empty-state"><i class="ti ti-user-check" aria-hidden="true"></i><div style="margin-top:8px">No pending registrations</div></div>';
-    return;
+  } catch(e) {
+    showToast('Failed to load requests');
   }
-  const rows = users.map(u => {
-    const date = new Date(u.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short'});
-    return `<tr>
-      <td>${u.name}</td>
-      <td style="color:#6366f1">${u.email}</td>
-      <td>
-        <div class="role-radio" id="roleSelect-${u.id}">
-          <div class="role-radio-btn ${u.role==='employee'?'selected':''}" onclick="selectApprovalRole(${u.id},'employee')">Employee</div>
-          <div class="role-radio-btn ${u.role==='manager'?'selected':''}" onclick="selectApprovalRole(${u.id},'manager')">Manager</div>
-        </div>
-      </td>
-      <td style="color:#6366f1">${date}</td>
-      <td>
-        <div style="display:flex;gap:5px">
-          <button class="btn btn-green" style="padding:4px 10px;font-size:10px" onclick="approveUser(${u.id})">Approve</button>
-          <button class="btn btn-red" style="padding:4px 10px;font-size:10px" onclick="rejectUser(${u.id})">Reject</button>
-        </div>
-      </td>
-    </tr>`;
-  }).join('');
-  wrap.innerHTML = `<table>
-    <thead><tr><th>Name</th><th>Email</th><th>Requested role</th><th>Registered</th><th>Actions</th></tr></thead>
-    <tbody>${rows}</tbody></table>`;
-}
-
-const approvalRoles = {};
-function selectApprovalRole(id, role) {
-  approvalRoles[id] = role;
-  document.querySelectorAll(`#roleSelect-${id} .role-radio-btn`).forEach(b => b.classList.remove('selected'));
-  event.target.classList.add('selected');
-}
-
-async function approveUser(id) {
-  const role = approvalRoles[id] || null;
-  try {
-    const res = await fetch(`${API}/auth/approve-user/${id}`, {
-      method: 'PUT',
-      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ decision: 'approved', role })
-    });
-    const data = await res.json();
-    if (!res.ok) { showToast(data.error); return; }
-    showToast(`${data.user.name} approved as ${data.user.role}`);
-    loadPendingUsers();
-  } catch(e) { showToast('Approval failed'); }
-}
-
-async function rejectUser(id) {
-  if (!confirm('Reject this registration?')) return;
-  try {
-    const res = await fetch(`${API}/auth/approve-user/${id}`, {
-      method: 'PUT',
-      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ decision: 'rejected' })
-    });
-    const data = await res.json();
-    if (!res.ok) { showToast(data.error); return; }
-    showToast('Registration rejected');
-    loadPendingUsers();
-  } catch(e) { showToast('Action failed'); }
 }
 
 function updateStats() {
@@ -406,6 +372,7 @@ function renderTable(requests, containerId, showActions) {
     'Expense Claim': { bg:'#fef3c7', color:'#b45309' },
     'Access Request': { bg:'#e0f2fe', color:'#0369a1' }
   };
+
   const statusBadge = {
     pending: '<span class="badge" style="background:#ffedd5;color:#c2410c"><div class="dot" style="background:#ea580c"></div>Pending</span>',
     approved: '<span class="badge" style="background:#dcfce7;color:#15803d"><div class="dot" style="background:#16a34a"></div>Approved</span>',
@@ -418,7 +385,7 @@ function renderTable(requests, containerId, showActions) {
     const initials = (r.employee_name||'?').split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
     const avatarColors = ['#e0e7ff','#fef3c7','#dcfce7','#fee2e2','#e0f2fe','#f5f3ff'];
     const avBg = avatarColors[r.id % avatarColors.length];
-
+    const avColor = '#4338ca';
     const fileCell = r.file_path
       ? `<a href="/${r.file_path}" target="_blank" title="View PDF"><i class="ti ti-file-type-pdf" style="font-size:16px;color:#ef4444" aria-hidden="true"></i></a>`
       : '<span style="color:#a5b4fc">—</span>';
@@ -435,7 +402,8 @@ function renderTable(requests, containerId, showActions) {
         btns.push(`<button class="btn btn-red" style="padding:4px 10px;font-size:10px" onclick="updateStatus(${r.id},'rejected')">Reject</button>`);
       }
       if (r.status === 'pending' && isOwner) {
-        btns.push(`<button class="btn btn-purple" style="padding:4px 10px;font-size:10px" onclick="openReplaceFile(${r.id})"><i class="ti ti-replace" style="font-size:11px" aria-hidden="true"></i>Replace PDF</button>`);
+        btns.push(`<button class="btn btn-purple" style="padding:4px 10px;font-size:10px" onclick="openEditModal(${r.id})"><i class="ti ti-edit" style="font-size:11px" aria-hidden="true"></i>Edit</button>`);
+        btns.push(`<button class="btn" style="padding:4px 10px;font-size:10px" onclick="openReplaceFile(${r.id})"><i class="ti ti-replace" style="font-size:11px" aria-hidden="true"></i>PDF</button>`);
       }
       if (isAdmin) {
         btns.push(`<button class="btn btn-red" style="padding:4px 10px;font-size:10px" onclick="deleteRequest(${r.id})"><i class="ti ti-trash" style="font-size:11px" aria-hidden="true"></i>Delete</button>`);
@@ -444,7 +412,7 @@ function renderTable(requests, containerId, showActions) {
     }
 
     return `<tr>
-      <td><div style="display:flex;align-items:center;gap:7px"><div class="av" style="background:${avBg};color:#4338ca">${initials}</div>${r.employee_name||'Unknown'}</div></td>
+      <td><div style="display:flex;align-items:center;gap:7px"><div class="av" style="background:${avBg};color:${avColor}">${initials}</div>${r.employee_name||'Unknown'}</div></td>
       <td><span class="tag" style="background:${tc.bg};color:${tc.color}">${r.type}</span></td>
       <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#4338ca" title="${r.description}">${r.description}</td>
       <td>${fileCell}</td>
@@ -457,7 +425,8 @@ function renderTable(requests, containerId, showActions) {
   const actionHeader = showActions ? '<th>Actions</th>' : '';
   wrap.innerHTML = `<table>
     <thead><tr><th>Employee</th><th>Type</th><th>Description</th><th>Proof</th><th>Status</th><th>Date</th>${actionHeader}</tr></thead>
-    <tbody>${rows}</tbody></table>`;
+    <tbody>${rows}</tbody>
+  </table>`;
 }
 
 function filterTable() {
@@ -485,39 +454,20 @@ async function updateStatus(id, status) {
 async function deleteRequest(id) {
   if (!confirm('Delete this request permanently?')) return;
   try {
-    const res = await fetch(`${API}/requests/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+    const res = await fetch(`${API}/requests/${id}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
     if (!res.ok) { const d = await res.json(); showToast(d.error); return; }
     showToast('Request deleted');
     loadRequests();
   } catch(e) { showToast('Delete failed'); }
 }
 
-function openReplaceFile(id) {
-  replaceRequestId = id;
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = '.pdf';
-  input.onchange = async () => {
-    if (!input.files[0]) return;
-    const form = new FormData();
-    form.append('document', input.files[0]);
-    try {
-      const res = await fetch(`${API}/upload/${id}`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` },
-        body: form
-      });
-      const data = await res.json();
-      if (!res.ok) { showToast(data.error); return; }
-      showToast('File replaced successfully');
-      loadRequests();
-    } catch(e) { showToast('Replace failed'); }
-  };
-  input.click();
-}
-
 function handleFileSelect(input) {
-  if (input.files[0]) document.getElementById('uploadLabel').textContent = input.files[0].name;
+  if (input.files[0]) {
+    document.getElementById('uploadLabel').textContent = input.files[0].name;
+  }
 }
 
 async function submitRequest() {
@@ -533,7 +483,7 @@ async function submitRequest() {
     const res = await fetch(`${API}/requests`, {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ employee_name: name, type, description: desc })
+      body: JSON.stringify({ employee_name: name, type, description: desc, submitted_by: currentUser.id })
     });
     const data = await res.json();
     if (!res.ok) { err.textContent = data.error; err.style.display = 'block'; return; }
@@ -560,7 +510,7 @@ async function submitRequest() {
 }
 
 function exportCSV() {
-  if (currentUser.role === 'employee' || currentUser.role === 'manager') { showToast('Export not available for your role'); return; }
+  if (currentUser.role === 'employee') { showToast('Export not available for your role'); return; }
   const headers = ['ID','Employee','Type','Description','Status','File','Date'];
   const rows = allRequests.map(r => [
     r.id, r.employee_name, r.type,
@@ -576,19 +526,18 @@ function exportCSV() {
   showToast('CSV downloaded');
 }
 
-function showSection(name, el) {
-  ['dashboard','new-request','my-requests','all-requests','pending-users'].forEach(s => {
-    const sec = document.getElementById(`section-${s}`);
-    if (sec) sec.classList.add('hidden');
+function showSection(name) {
+  ['dashboard','new-request','my-requests','all-requests'].forEach(s => {
+    document.getElementById(`section-${s}`).classList.add('hidden');
   });
   document.getElementById(`section-${name}`).classList.remove('hidden');
-  document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-  if (el) el.classList.add('active');
 
-  const titles = { dashboard:'Dashboard Overview', 'new-request':'New Request', 'my-requests':'My Requests', 'all-requests':'Approvals', 'pending-users':'User Approvals' };
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+
+  const titles = { dashboard:'Dashboard Overview', 'new-request':'New Request', 'my-requests':'My Requests', 'all-requests':'Approvals' };
   document.getElementById('pageTitle').textContent = titles[name] || 'Dashboard';
 
-  if (name === 'pending-users') loadPendingUsers();
+  if (name === 'my-requests') loadRequests();
 }
 
 function showToast(msg) {
@@ -602,6 +551,112 @@ function logout() {
   localStorage.removeItem('token');
   localStorage.removeItem('user');
   window.location.href = '/';
+}
+
+let replacingRequestId = null;
+
+function openReplaceFile(id) {
+  replacingRequestId = id;
+  document.getElementById('replaceUploadLabel').textContent = 'Click to select PDF';
+  document.getElementById('replacePdfInput').value = '';
+  document.getElementById('replaceError').style.display = 'none';
+  document.getElementById('replaceModalBg').style.display = 'flex';
+}
+
+function closeReplaceModal() {
+  document.getElementById('replaceModalBg').style.display = 'none';
+  replacingRequestId = null;
+}
+
+function handleReplaceFileSelect(input) {
+  if (input.files[0]) {
+    document.getElementById('replaceUploadLabel').textContent = input.files[0].name;
+  }
+}
+
+async function submitReplaceFile() {
+  const fileInput = document.getElementById('replacePdfInput');
+  const err = document.getElementById('replaceError');
+
+  if (!fileInput.files[0]) {
+    err.textContent = 'Please select a PDF file first.';
+    err.style.display = 'block';
+    return;
+  }
+
+  const form = new FormData();
+  form.append('document', fileInput.files[0]);
+
+  try {
+    const res = await fetch(`${API}/upload/${replacingRequestId}`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` },
+      body: form
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      err.textContent = data.error || 'Upload failed.';
+      err.style.display = 'block';
+      return;
+    }
+    showToast('PDF replaced successfully');
+    closeReplaceModal();
+    loadRequests();
+  } catch(e) {
+    err.textContent = 'Upload failed. Try again.';
+    err.style.display = 'block';
+  }
+}
+
+let editingRequestId = null;
+
+function openEditModal(id) {
+  const req = allRequests.find(r => r.id === id);
+  if (!req) return;
+  editingRequestId = id;
+  document.getElementById('editType').value = req.type;
+  document.getElementById('editName').value = req.employee_name;
+  document.getElementById('editDesc').value = req.description;
+  document.getElementById('editError').style.display = 'none';
+  document.getElementById('editModalBg').style.display = 'flex';
+}
+
+function closeEditModal() {
+  document.getElementById('editModalBg').style.display = 'none';
+  editingRequestId = null;
+}
+
+async function saveEdit() {
+  const type = document.getElementById('editType').value;
+  const name = document.getElementById('editName').value.trim();
+  const desc = document.getElementById('editDesc').value.trim();
+  const err = document.getElementById('editError');
+
+  if (!name || !desc) {
+    err.textContent = 'Please fill all fields.';
+    err.style.display = 'block';
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API}/requests/${editingRequestId}/edit`, {
+      method: 'PATCH',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ employee_name: name, type, description: desc })
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      err.textContent = data.error;
+      err.style.display = 'block';
+      return;
+    }
+    showToast('Request updated successfully');
+    closeEditModal();
+    loadRequests();
+  } catch(e) {
+    err.textContent = 'Update failed. Try again.';
+    err.style.display = 'block';
+  }
 }
 
 init();

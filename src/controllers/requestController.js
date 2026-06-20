@@ -4,7 +4,7 @@ const getAllRequests=async(req,res)=>{
         let result;
         if(req.user.role==='employee'){
         result=await pool.query(
-            'SELECT * FROM requests WHERE submitted_by =$1 ORDER BY created_at DESC'[req.user.id]);}
+            'SELECT * FROM requests WHERE submitted_by =$1 ORDER BY created_at DESC',[req.user.id]);}
             else{
                 result=await pool.query(
                     'SELECT * FROM requests ORDER BY created_at DESC'
@@ -13,6 +13,7 @@ const getAllRequests=async(req,res)=>{
             res.status(200).json(result.rows);
     }
     catch(err){
+        console.log('ERROR CAUGHT:', err);
         res.status(500).json({error:err.message});
     }
 };

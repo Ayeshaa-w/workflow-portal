@@ -28,5 +28,6 @@ app.use('/upload', uploadRoutes);
 
 
 app.listen(PORT, () => {
+    console.log('HIT /requests GET route');
     console.log(`Server running on port ${PORT}`);
 });
