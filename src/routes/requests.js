@@ -6,7 +6,8 @@ const {
     getRequestById,
     createRequest,
     updateStatus,
-    deleteRequest
+    deleteRequest,
+    editRequest
 } = require('../controllers/requestController');
 
 router.get('/', verifyToken, getAllRequests);
