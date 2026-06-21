@@ -9,6 +9,8 @@
 ![Deployed](https://img.shields.io/badge/Deployed-Render-46E3B7?logo=render&logoColor=white)
 
 **[🔗 Live Demo](https://workflow-portal.onrender.com)**
+</br>
+ **[🔗Read blog on Hashnode](https://ayeshaa.hashnode.dev/role-based-approval-system)**
 
 </div>
 
